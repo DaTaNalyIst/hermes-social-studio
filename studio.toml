@@ -7,7 +7,7 @@ window_days = 7            # how far ahead the scheduler looks for a good slot
 quiet_hours = [0, 6]       # no posts between these local hours
 
 [kaggle]
-username = ""              # your Kaggle username (for daily runs and /studio from Telegram)
+username = "Joseph Gikubu"              # your Kaggle username (for daily runs and /studio from Telegram)
 chat_idle_minutes = 30     # a session started from Telegram ends after this many quiet minutes
 
 [hosting]
