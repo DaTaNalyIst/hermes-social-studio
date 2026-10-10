@@ -1,0 +1,16 @@
+{
+  "title": "How Kenyan coffee is grown",
+  "language": "en",
+  "media": ["/kaggle/working/outputs/films/how-kenyan-coffee-is-grown/how-kenyan-coffee-is-grown.mp4"],
+  "caption": "From cherry to cup on the slopes of Mount Kenya.",
+  "hashtags": ["kenyancoffee", "coffee", "kenya", "aiart"],
+  "targets": [
+    {"platform": "instagram", "format": "reel", "caption": "From cherry to cup in 45 seconds. Made with open AI models. #kenyancoffee #coffee #kenya"},
+    {"platform": "instagram", "format": "story"},
+    {"platform": "facebook", "format": "reel", "caption": "How Kenyan coffee is grown, in under a minute."},
+    {"platform": "youtube", "format": "short", "title": "How Kenyan coffee is grown #shorts", "caption": "Seed to cup on the slopes of Mount Kenya. Narrated with an AI voice.", "tags": ["kenyan coffee", "coffee farming"]},
+    {"platform": "threads", "format": "text", "caption": "Ever wondered how Kenyan coffee reaches your cup? We made a 45-second film about it. #coffee"},
+    {"platform": "bluesky", "format": "video", "caption": "Kenyan coffee, from cherry to cup. #coffee"},
+    {"platform": "telegram", "format": "video", "caption": "New short: how Kenyan coffee is grown."}
+  ]
+}

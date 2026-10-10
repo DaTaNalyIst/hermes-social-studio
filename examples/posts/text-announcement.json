@@ -1,0 +1,11 @@
+{
+  "title": "Weekend announcement",
+  "caption": "New films every Monday, Wednesday and Friday. What should we make next?",
+  "link": "https://example.com",
+  "targets": [
+    {"platform": "facebook", "format": "post"},
+    {"platform": "threads", "format": "text"},
+    {"platform": "bluesky", "format": "text"},
+    {"platform": "telegram", "format": "text", "at": "2026-10-10 18:00"}
+  ]
+}

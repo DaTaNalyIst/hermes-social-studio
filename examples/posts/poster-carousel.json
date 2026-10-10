@@ -1,0 +1,13 @@
+{
+  "title": "Nairobi rooftop cafe posters",
+  "language": "en",
+  "media": [
+    "/kaggle/working/outputs/rooftop-cafe/v1_s101.png",
+    "/kaggle/working/outputs/rooftop-cafe/v2_s102.png",
+    "/kaggle/working/outputs/rooftop-cafe/v3_s103.png"
+  ],
+  "caption": "Golden hour on a Nairobi rooftop. Which one is your favourite?",
+  "hashtags": ["nairobi", "cafe", "aiart"],
+  "targets": "auto",
+  "not_before": "2026-10-08 09:00"
+}

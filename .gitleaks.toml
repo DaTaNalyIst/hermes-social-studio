@@ -1,0 +1,10 @@
+# Gitleaks: use the default rules, but ignore
+# - the obviously fake credentials in unit tests (e.g. AWS's published example key used to verify
+#   the SigV4 signer), and
+# - state/vault.enc, which is ciphertext by design (scrypt + Fernet; see SECURITY.md).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "test fixtures contain fake, non-working credentials; the vault is encrypted"
+paths = ['''^tests/''', '''^state/vault\.enc$''']

@@ -1,0 +1,65 @@
+# Every 30 minutes: publish what is due, collect finished Kaggle runs, start the daily autopilot
+# run when it is time, answer the control bot (poll mode) and keep approvals current.
+# Public repos: free. Private repos: ~1,500 of the 2,000 free minutes a month.
+name: publish
+on:
+  schedule:
+    - cron: "7,37 * * * *"   # off the hour: top-of-hour schedules are the most delayed
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Log what would be posted, post nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # update queue/ and state/, read and write media releases
+  issues: write     # keep approval issues current
+
+concurrency:
+  group: social-state
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      SOCIAL_VAULT_PASSPHRASE: ${{ secrets.SOCIAL_VAULT_PASSPHRASE }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skip until configured
+        id: cfg
+        run: |
+          if [ -z "$SOCIAL_VAULT_PASSPHRASE" ] || [ ! -f state/vault.enc ]; then
+            echo "Not configured yet: run 'social init' and add the SOCIAL_VAULT_PASSPHRASE secret."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.cfg.outputs.ready == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        if: steps.cfg.outputs.ready == 'true'
+        run: pip install -q .
+      - name: Publish due posts
+        id: publish
+        if: steps.cfg.outputs.ready == 'true'
+        run: social run-due ${{ inputs.dry_run && '--dry-run' || '' }}
+      - name: Collect finished Kaggle runs
+        if: always() && steps.cfg.outputs.ready == 'true' && env.KAGGLE_API_TOKEN != ''
+        run: social kaggle-collect
+      - name: Start the daily autopilot run when it is time
+        if: always() && steps.cfg.outputs.ready == 'true' && env.KAGGLE_API_TOKEN != ''
+        run: social autopilot-launch --if-due || true
+      - name: Control bot (poll mode)
+        if: always() && steps.cfg.outputs.ready == 'true'
+        run: social telegram-poll || true
+      - name: Update approvals
+        if: always() && steps.cfg.outputs.ready == 'true'
+        run: social approvals-sync

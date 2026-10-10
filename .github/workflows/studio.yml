@@ -1,0 +1,52 @@
+# Start a Kaggle run by hand (the GitHub mobile app works too): a chat session with Hermes,
+# today's autopilot, or the one-time copy of your Hermes chat token to a private Kaggle dataset.
+name: studio
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "What to do"
+        type: choice
+        options: [chat, autopilot, keys, collect]
+        default: chat
+      date:
+        description: "autopilot only: YYYY-MM-DD (empty = today)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: social-state
+  cancel-in-progress: false
+
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SOCIAL_VAULT_PASSPHRASE: ${{ secrets.SOCIAL_VAULT_PASSPHRASE }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+      RUN_DATE: ${{ inputs.date }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -q .
+      - name: Chat session
+        if: inputs.mode == 'chat'
+        run: social kaggle-launch --mode chat
+      - name: Autopilot run
+        if: inputs.mode == 'autopilot'
+        run: social autopilot-launch ${RUN_DATE:+--date "$RUN_DATE"}
+      - name: Copy the Hermes chat token to Kaggle
+        if: inputs.mode == 'keys'
+        run: social kaggle-keys
+      - name: Collect finished runs
+        if: inputs.mode == 'collect'
+        run: social kaggle-collect && social approvals-sync

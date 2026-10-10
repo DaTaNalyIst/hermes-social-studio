@@ -1,0 +1,30 @@
+# Autopilot: what Hermes makes and posts every day. No secrets here.
+[autopilot]
+enabled = false               # set true (or send /resume to your control bot) to start daily runs
+run_at = "06:00"              # audience-local time the daily Kaggle run starts
+approval = "timeout"          # required: wait for you | timeout: post unless you reject | auto
+approve_after_hours = 3       # with "timeout": hours you have to reject before it is approved
+language = "en"
+brand = "Describe who you are in one sentence, e.g. a Nairobi coffee roaster sharing coffee culture"
+audience = "Who you post for, e.g. young professionals in East Africa who love coffee"
+style = "warm, cinematic, natural light, authentic African settings"
+voice = "friendly and curious"
+avoid = ["politics", "real, identifiable people", "medical or financial claims"]
+topics = [
+  "how coffee cherries are picked",
+  "a barista's morning routine",
+  "three ways to brew coffee at home",
+]
+
+# One [[slot]] per kind of post. days: mon..sun or "daily".
+[[slot]]
+id = "short"
+days = ["mon", "wed", "fri"]
+kind = "short"
+targets = ["instagram:reel", "facebook:reel", "youtube:short", "telegram:video"]
+
+[[slot]]
+id = "image"
+days = ["tue", "thu", "sat", "sun"]
+kind = "image"
+targets = ["instagram:image", "facebook:photo", "telegram:photo"]

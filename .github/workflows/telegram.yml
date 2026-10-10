@@ -1,0 +1,45 @@
+# Runs one command from your control bot (sent here by the Cloudflare Worker), or points the
+# bot at the Worker (run it by hand with webhook_url).
+name: telegram
+on:
+  workflow_dispatch:
+    inputs:
+      update:
+        description: "Telegram update (filled in by the Worker)"
+        required: false
+        default: ""
+      webhook_url:
+        description: "One-time setup: your Worker URL, e.g. https://studio-relay.you.workers.dev"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  handle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SOCIAL_VAULT_PASSPHRASE: ${{ secrets.SOCIAL_VAULT_PASSPHRASE }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+      TELEGRAM_UPDATE: ${{ inputs.update }}
+      WEBHOOK_URL: ${{ inputs.webhook_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -q .
+      - name: Set the webhook
+        if: env.WEBHOOK_URL != ''
+        run: social telegram-webhook "$WEBHOOK_URL"
+      - name: Handle the command
+        if: env.TELEGRAM_UPDATE != ''
+        run: social telegram-handle
+      - name: Send new posts for approval
+        if: env.TELEGRAM_UPDATE != ''
+        run: social approvals-sync

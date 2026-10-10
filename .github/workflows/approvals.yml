@@ -1,0 +1,42 @@
+# Opens an approval issue when Hermes queues a post, and applies /approve, /reject, /move and
+# /now comments. Only the repo owner and collaborators are obeyed.
+name: approvals
+on:
+  push:
+    branches: [main]
+    paths: ["queue/posts/**"]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: social-state
+  cancel-in-progress: false
+
+jobs:
+  approvals:
+    if: >
+      github.event_name == 'push' ||
+      (github.event.issue.pull_request == null &&
+       contains(github.event.issue.labels.*.name, 'social-approval') &&
+       startsWith(github.event.comment.body, '/'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      SOCIAL_VAULT_PASSPHRASE: ${{ secrets.SOCIAL_VAULT_PASSPHRASE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -q .
+      - name: Apply the comment
+        if: github.event_name == 'issue_comment'
+        run: social approvals-comment
+      - name: Sync approval issues
+        run: social approvals-sync
