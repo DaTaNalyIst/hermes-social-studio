@@ -1,6 +1,6 @@
 # Hermes Social Studio settings. No secrets here: those live in state/vault.enc.
 [general]
-timezone = "Africa/Nairobi"          # your AUDIENCE's timezone (IANA name)
+timezone = "New York"          # your AUDIENCE's timezone (IANA name)
 mode = "dry-run"           # dry-run: plan and log only. Switch to "live" after a good dry run.
 approval = "required"      # required: nothing posts until you approve; auto: post as planned
 window_days = 7            # how far ahead the scheduler looks for a good slot
