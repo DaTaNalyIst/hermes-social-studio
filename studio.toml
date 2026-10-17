@@ -17,11 +17,11 @@ region = "us-west-004"
 bucket = ""
 
 [platforms.facebook]
-enabled = false
+enabled = true
 daily_cap = 2
 
 [platforms.instagram]
-enabled = false
+enabled = true
 daily_cap = 2
 
 [platforms.threads]
