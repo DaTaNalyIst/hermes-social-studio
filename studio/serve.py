@@ -28,7 +28,7 @@ from studiolib import common as C  # noqa: E402
 from studiolib import jobs as J  # noqa: E402
 
 HERMES_HOME = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes"))
-HERMES_BIN = Path.home() / ".local" / "bin" / "hermes"
+HERMES_BIN = Path.home() / ".local" / "bin" / "social"
 PID_FILE = C.STATE / "gateway.pid"
 STOP_FILE = C.STATE / "stop-requested"
 
@@ -86,7 +86,7 @@ def start_gateway() -> int:
         raise SystemExit("No TELEGRAM_BOT_TOKEN. Add it in Add-ons > Secrets, re-run the setup cell, then this one.")
     C.STATE.mkdir(parents=True, exist_ok=True)
     log = open(C.LOGS / "gateway.log", "a")
-    p = subprocess.Popen([str(HERMES_BIN), "gateway", "run"], stdout=log, stderr=subprocess.STDOUT,
+    p = subprocess.Popen([str(HERMES_BIN), "telegram-poll"], stdout=log, stderr=subprocess.STDOUT,
                          stdin=subprocess.DEVNULL, cwd=str(C.WORK), start_new_session=True)
     PID_FILE.write_text(str(p.pid))
     time.sleep(8)
