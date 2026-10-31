@@ -47,6 +47,18 @@ jobs:
       - name: Install
         if: steps.cfg.outputs.ready == 'true'
         run: pip install -q .
+      - name: Install workflow validation tools
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/actionlint"
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash \
+            | bash -s -- latest "$RUNNER_TEMP/actionlint"
+          python -m pip install -q PyYAML
+      - name: Validate workflows
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          "$RUNNER_TEMP/actionlint/actionlint" .github/workflows/*.yml
+          python -c "from pathlib import Path; import yaml; [yaml.safe_load(p.read_text()) for p in Path('.github/workflows').glob('*.yml')]"
       - name: Publish due posts
         id: publish
         if: steps.cfg.outputs.ready == 'true'
@@ -56,10 +68,10 @@ jobs:
         run: social kaggle-collect
       - name: Start the daily autopilot run when it is time
         if: always() && steps.cfg.outputs.ready == 'true' && env.KAGGLE_API_TOKEN != ''
-        run: social autopilot-launch --if-due || true
+        run: social autopilot-launch --if-due
       - name: Control bot (poll mode)
         if: always() && steps.cfg.outputs.ready == 'true'
-        run: social telegram-poll || true
+        run: social telegram-poll
       - name: Update approvals
         if: always() && steps.cfg.outputs.ready == 'true'
         run: social approvals-sync
