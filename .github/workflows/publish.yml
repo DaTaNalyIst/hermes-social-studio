@@ -47,6 +47,16 @@ jobs:
       - name: Install
         if: steps.cfg.outputs.ready == 'true'
         run: pip install -q .
+      - name: Validate vault passphrase
+        id: vault
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          if social secrets list >/dev/null 2>&1; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Vault passphrase is invalid for state/vault.enc; skipping publish commands."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Install workflow validation tools
         if: steps.cfg.outputs.ready == 'true'
         run: |
@@ -61,17 +71,17 @@ jobs:
           python -c "from pathlib import Path; import yaml; [yaml.safe_load(p.read_text()) for p in Path('.github/workflows').glob('*.yml')]"
       - name: Publish due posts
         id: publish
-        if: steps.cfg.outputs.ready == 'true'
+        if: steps.cfg.outputs.ready == 'true' && steps.vault.outputs.ready == 'true'
         run: social run-due ${{ inputs.dry_run && '--dry-run' || '' }}
       - name: Collect finished Kaggle runs
-        if: always() && steps.cfg.outputs.ready == 'true' && env.KAGGLE_API_TOKEN != ''
+        if: always() && steps.cfg.outputs.ready == 'true' && steps.vault.outputs.ready == 'true' && env.KAGGLE_API_TOKEN != ''
         run: social kaggle-collect
       - name: Start the daily autopilot run when it is time
-        if: always() && steps.cfg.outputs.ready == 'true' && env.KAGGLE_API_TOKEN != ''
+        if: always() && steps.cfg.outputs.ready == 'true' && steps.vault.outputs.ready == 'true' && env.KAGGLE_API_TOKEN != ''
         run: social autopilot-launch --if-due
       - name: Control bot (poll mode)
-        if: always() && steps.cfg.outputs.ready == 'true'
+        if: always() && steps.cfg.outputs.ready == 'true' && steps.vault.outputs.ready == 'true'
         run: social telegram-poll
       - name: Update approvals
-        if: always() && steps.cfg.outputs.ready == 'true'
+        if: always() && steps.cfg.outputs.ready == 'true' && steps.vault.outputs.ready == 'true'
         run: social approvals-sync
