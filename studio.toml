@@ -12,9 +12,15 @@ chat_idle_minutes = 30     # a session started from Telegram ends after this man
 
 [hosting]
 provider = "s3"      # facebook (images only, free, no setup) | s3 (Backblaze B2 / R2 bucket)
+<<<<<<< HEAD
 endpoint = "s3.us-east-005.backblazeb2.com"              # s3 only, e.g. "https://s3.us-west-004.backblazeb2.com"
 region = "us-east-005"
 bucket = "HermesSocialworkflow"
+=======
+endpoint = ""              # s3 only, e.g. "https://s3.us-west-004.backblazeb2.com"
+region = "us-west-004"
+bucket = ""
+>>>>>>> 0c2998a246256e69b6dd6767002e86e13a0dcd5f
 
 [platforms.facebook]
 enabled = true
@@ -34,7 +40,7 @@ daily_cap = 1
 audited = false            # true once Google has audited your API project (uploads can be public)
 
 [platforms.bluesky]
-enabled = false
+enabled = true
 daily_cap = 4
 
 [platforms.telegram]
