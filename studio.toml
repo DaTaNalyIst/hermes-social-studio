@@ -34,7 +34,7 @@ daily_cap = 1
 audited = false            # true once Google has audited your API project (uploads can be public)
 
 [platforms.bluesky]
-enabled = false
+enabled = true
 daily_cap = 4
 
 [platforms.telegram]
